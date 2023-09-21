@@ -24,4 +24,8 @@
     <Using Include="System.Console" Static="true" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\" />
+  </ItemGroup>
+
 </Project>
