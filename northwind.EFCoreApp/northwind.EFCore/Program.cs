@@ -2,6 +2,8 @@
 //-provider Microsoft.EntityFrameworkCore.SqlServer - OutputDir Models - DataAnnotations - context NorthwindDb
 
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using northwind.EFCore.Models;
 
 SqlConnectionStringBuilder builder = new();
 
@@ -76,4 +78,39 @@ else
     return;
 }
 
+DbContextOptionsBuilder<NorthwindDb> options = new();
+options.UseSqlServer(builder.ConnectionString);
 
+using (NorthwindDb db = new(options.Options))
+{
+    Write("Enter a unit price: ");
+    string? priceText = ReadLine();
+
+    if (!decimal.TryParse(priceText, out decimal price))
+    {
+        WriteLine("You must enter a valid unit price.");
+        return;
+    }
+
+    var products = db.Products
+        .Where(p => p.UnitPrice > price)
+        .Select(p => new { p.ProductId, p.ProductName, p.UnitPrice });
+
+    WriteLine("----------------------------------------------------------");
+    WriteLine("| {0,5} | {1,-35} | {2,8} |", "Id", "Name", "Price");
+    WriteLine("----------------------------------------------------------");
+
+    foreach (var p in products)
+    {
+        WriteLine("| {0,5} | {1,-35} | {2,8:C} |",
+        p.ProductId, p.ProductName, p.UnitPrice);
+    }
+
+    WriteLine("----------------------------------------------------------");
+
+    WriteLine(products.ToQueryString());
+    WriteLine();
+    WriteLine($"Provider: {db.Database.ProviderName}");
+    WriteLine($"Connection: {db.Database.GetConnectionString()}");
+
+}
