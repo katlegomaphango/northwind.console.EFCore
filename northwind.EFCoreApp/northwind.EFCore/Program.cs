@@ -39,3 +39,41 @@ else
     WriteLine("No data source selected.");
     return;
 }
+
+
+WriteLine("Authenticate using:");
+WriteLine(" 1 - Windows Integrated Security");
+WriteLine(" 2 - SQL Login, for example, sa");
+WriteLine();
+Write("Press a key: ");
+
+key = ReadKey().Key;
+WriteLine();
+WriteLine();
+
+
+if (key is ConsoleKey.D1 or ConsoleKey.NumPad1)
+{
+    builder.IntegratedSecurity = true;
+} else if(key is ConsoleKey.D2 or ConsoleKey.NumPad2)
+{
+    builder.UserID = "sa";
+
+    Write("Enter your SQL Server password: ");
+    string? password = ReadLine();
+
+    if (string.IsNullOrWhiteSpace(password))
+    {
+        WriteLine("Password cannot be empty or null.");
+        return;
+    }
+    builder.Password = password;
+    builder.PersistSecurityInfo = false;
+}
+else
+{
+    WriteLine("No authentication selected.");
+    return;
+}
+
+
